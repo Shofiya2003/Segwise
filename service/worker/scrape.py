@@ -1,5 +1,7 @@
 import gspread
 import pandas as pd
+from sqlalchemy.orm import Session
+from src.services.game_service import insert_game
 
 def scrape_public_google_sheet(spreadsheet_url):
     """
@@ -15,11 +17,10 @@ def scrape_public_google_sheet(spreadsheet_url):
     sh = gc.open_by_url(spreadsheet_url)
     worksheet = sh.sheet1
     data = worksheet.get_all_records()
-    df = pd.DataFrame(data)
-    return df
-
-# Example usage:
-if __name__ == "__main__":
-    spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1ShbFMzRUuIJY8amTA58UuEHwsc3UmAnd_LzduBwcBhE/edit?gid=1439814054#gid=1439814054' 
-    df = scrape_public_google_sheet(spreadsheet_url)
-    print(df.head())
+    # df = pd.DataFrame(data)
+    for game in data:
+        success, message = insert_game(game)
+        if not success:
+            print(message)
+            return
+    print("Successfully inserted all records")
