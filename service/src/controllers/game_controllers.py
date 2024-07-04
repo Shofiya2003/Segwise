@@ -39,7 +39,7 @@ def query():
                 query = query.filter(column.like(f'%{value}%'))
 
         elif key in ['sum', 'max', 'min', 'avg']:
-            func_column = getattr(Game, params.get('column', ''))
+            func_column = getattr(Game, value)
             if key == 'sum':
                 result = session.query(func.sum(func_column)).scalar()
             elif key == 'max':
