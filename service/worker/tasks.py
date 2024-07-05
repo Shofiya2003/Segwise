@@ -1,14 +1,17 @@
 import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 from src.services.game_service import insert_game
 from src.database import UploadLogs, get_engine
 from sqlalchemy.orm import Session
 from .celery import app
 from celery.utils.log import get_task_logger
-
+from pathlib import Path
 engine = get_engine()
 session = Session(engine)
 
 logger = get_task_logger(__name__)
+
+creds = ServiceAccountCredentials.from_json_keyfile_name(Path("./worker/service_account.json"))
 
 @app.task
 def scrape_public_google_sheet(spreadsheet_url,upload_log_id):
@@ -20,7 +23,8 @@ def scrape_public_google_sheet(spreadsheet_url,upload_log_id):
     - upload_log_id: integer, the id of the upload log
     """
     logger.info("Uploading data from the CSV file")
-    gc = gspread.service_account()
+    # gc = gspread.service_account()
+    gc = gspread.authorize(creds)
     sh = gc.open_by_url(spreadsheet_url)
     worksheet = sh.sheet1
     data = worksheet.get_all_records()

@@ -19,7 +19,7 @@ def handle_upload():
     if not data or not 'csv_url' in data:
         return json.jsonify({"error": "Invalid input"}), 400
     try:
-        prev_upload_log = session.query(UploadLogs).filter(UploadLogs.csv_url == data['csv_url'], UploadLogs.success == True).one()
+        prev_upload_log = session.query(UploadLogs).filter(UploadLogs.csv_url == data['csv_url'], UploadLogs.success == True).all()
         if prev_upload_log:
             return json.jsonify({"message":"CSV file already uploaded"}), 200
         uploaded_at = datetime.now()
