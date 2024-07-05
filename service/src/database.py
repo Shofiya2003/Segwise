@@ -16,7 +16,15 @@ class Base:
     def _asdict(self):
         return {c.key: getattr(self, c.key)
                 for c in inspect(self).mapper.column_attrs}
-
+    
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True,autoincrement=True)
+    username = Column(String)
+    password = Column(String)
+    def to_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+    
 class Game(Base):
     __tablename__ = "games"
     id = Column(Integer, primary_key=True,autoincrement=True)
