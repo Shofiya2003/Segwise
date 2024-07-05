@@ -1,5 +1,6 @@
 
 from flask import Blueprint,Response,request,json
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 import traceback
 from database import Game, get_engine
@@ -10,6 +11,7 @@ game = Blueprint('games',__name__)
 engine = get_engine()
 session = Session(engine)
 
+@jwt_required()
 @game.route('/', methods=['GET'])
 def query():
     params = request.args
