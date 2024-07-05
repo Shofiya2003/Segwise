@@ -11,8 +11,8 @@ game = Blueprint('games',__name__)
 engine = get_engine()
 session = Session(engine)
 
-@jwt_required()
 @game.route('/', methods=['GET'])
+@jwt_required()
 def query():
     params = request.args
     query = session.query(Game)

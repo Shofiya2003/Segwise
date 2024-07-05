@@ -5,8 +5,8 @@ import traceback
 from worker.scrape import scrape_public_google_sheet
 upload_csv = Blueprint('upload_csv',__name__)
 
-@jwt_required
 @upload_csv.route('/',methods=['POST'])
+@jwt_required()
 def handle_upload():
     current_user = get_jwt_identity()
     data = request.get_json()
