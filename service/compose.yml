@@ -1,0 +1,42 @@
+services:
+  worker:
+    platform: linux/amd64
+    deploy:
+      replicas: 2
+    build:
+      context: "."
+      dockerfile: Dockerfile.worker
+    env_file:
+      - .env
+    restart: "always"
+    volumes:
+      - scraped_data:/app/database
+    depends_on:
+      - rabbitmq
+
+  app:
+    platform: linux/amd64
+    build:
+      context: "."
+      dockerfile: Dockerfile.flaskApp
+    env_file:
+      - .env
+    ports:
+      - "3123:5000"
+    restart: "always"
+    volumes:
+      - scraped_data:/app/database
+
+  rabbitmq:
+    image: rabbitmq:latest
+    ports:
+      - "5672:5672"
+    volumes:
+      - rabbitmq_data:/app/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+volumes:
+  scraped_data:
+  rabbitmq_data:
