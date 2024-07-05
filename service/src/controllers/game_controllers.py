@@ -16,11 +16,10 @@ session = Session(engine)
 def query():
     params = request.args
     query = session.query(Game)
-    
+    aggregate_results = {}
     for key, value in params.items():
         if hasattr(Game, key):
             column = getattr(Game, key)
-            print(column.type.python_type)
             if column.type.python_type == int or column.type.python_type == float:
                 if value.startswith('>'):
                     query = query.filter(column > float(value[1:]))
@@ -38,19 +37,29 @@ def query():
                 else:
                     query = query.filter(column == datetime.datetime.strptime(value, '%Y-%m-%d').date())
             else:
+                if key=="name":
+                    print(value)
+                    query = query.filter(column.like(f'{value}%'))
+                    continue
                 query = query.filter(column.like(f'%{value}%'))
 
         elif key in ['sum', 'max', 'min', 'avg']:
             func_column = getattr(Game, value)
-            if key == 'sum':
-                result = session.query(func.sum(func_column)).scalar()
-            elif key == 'max':
-                result = session.query(func.max(func_column)).scalar()
-            elif key == 'min':
-                result = session.query(func.min(func_column)).scalar()
-            elif key == 'avg':
-                result = session.query(func.avg(func_column)).scalar()
-            return json.jsonify({key: result})
-    
+            if func_column.type.python_type == int or func_column.type.python_type == float:
+                if key == 'sum':
+                    result = session.query(func.sum(func_column)).scalar()
+                elif key == 'max':
+                    result = session.query(func.max(func_column)).scalar()
+                elif key == 'min':
+                    result = session.query(func.min(func_column)).scalar()
+                elif key == 'avg':
+                    result = session.query(func.avg(func_column)).scalar()
+                aggregate_results[f"{key}_{func_column}"] = result
+            else:
+                return json.jsonify({"msg":"Aggrgate function can be applied to only Integer or Float columns "}) , 400
+            
     results = query.all()
-    return json.jsonify([game.to_dict() for game in results])
+    if len(aggregate_results.keys()) != 0:
+        return json.jsonify({"games":[game.to_dict() for game in results],"aggregate_results":aggregate_results}) , 200
+    else:
+        return json.jsonify({"games":[game.to_dict() for game in results]}) , 200

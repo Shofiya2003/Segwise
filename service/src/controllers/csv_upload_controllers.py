@@ -21,7 +21,7 @@ def handle_upload():
     try:
         prev_upload_log = session.query(UploadLogs).filter(UploadLogs.csv_url == data['csv_url'], UploadLogs.success == True).all()
         if prev_upload_log:
-            return json.jsonify({"message":"CSV file already uploaded"}), 200
+            return json.jsonify({"message":"CSV file already uploaded","log":prev_upload_log}), 200
         uploaded_at = datetime.now()
         new_upload_log = UploadLogs(user_id=current_user, csv_url=data['csv_url'], uploaded_at=uploaded_at)
         session.add(new_upload_log)

@@ -3,16 +3,20 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 from src.database import Game, Base, engine
 from datetime import datetime
-
+import ast
 
 def insert_game(data, upload_log_id):
     # Parse data and insert into database
     session = sessionmaker(bind=engine)()
 
     releaseDate = parse_date(data.get('Release date', None))
+    supported_languges = data.get('Supported languages', '')
+    data_list = ast.literal_eval(supported_languges)
+    print(data_list)
+    if isinstance(data_list, list):
+        supported_languges = ','.join(data_list)
     
     try:
-        # Convert types and insert into Game table
         game = Game(
             appId=int(data.get('AppID', 0)),
             name=data.get('Name', ''),
@@ -21,7 +25,7 @@ def insert_game(data, upload_log_id):
             price=float(data.get('Price', 0.0)),
             dlcCount=int(data.get('DLC count', 0)),
             aboutTheGame=data.get('About the game', ''),
-            supportedLanguages=data.get('Supported languages', ''),
+            supportedLanguages=supported_languges,
             windows=bool(data.get('Windows', 'FALSE').upper() == 'TRUE'),
             linux=bool(data.get('Linux', 'FALSE').upper() == 'TRUE'),
             mac=bool(data.get('Mac', 'FALSE').upper() == 'TRUE'),
