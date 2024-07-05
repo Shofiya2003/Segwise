@@ -1,11 +1,11 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
-from database import Game, Base, engine
+from src.database import Game, Base, engine
 from datetime import datetime
 
 
-def insert_game(data):
+def insert_game(data, upload_log_id):
     # Parse data and insert into database
     session = sessionmaker(bind=engine)()
 
@@ -32,7 +32,8 @@ def insert_game(data):
             publishers=data.get('Publishers', ''),
             categories=data.get('Categories', ''),
             genres=data.get('Genres', ''),
-            tags=data.get('Tags', '')
+            tags=data.get('Tags', ''),
+            upload_log_id=upload_log_id
         )
         
         session.add(game)

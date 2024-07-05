@@ -25,6 +25,16 @@ class User(Base):
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
     
+class UploadLogs(Base):
+    __tablename__ = "upload_logs"
+    id = Column(Integer, primary_key=True,autoincrement=True)
+    csv_url = Column(String)
+    user_id = Column(String)
+    uploaded_at = Column(Date)
+    success = Column(Boolean, default=False)
+    def to_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+    
 class Game(Base):
     __tablename__ = "games"
     id = Column(Integer, primary_key=True,autoincrement=True)
@@ -47,6 +57,7 @@ class Game(Base):
     categories = Column(String)
     genres = Column(String)
     tags = Column(String)
+    upload_log_id = Column(Integer)
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 

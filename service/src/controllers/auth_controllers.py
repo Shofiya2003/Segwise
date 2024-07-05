@@ -2,7 +2,7 @@ from flask import request, jsonify, Blueprint
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 import bcrypt
 import datetime
-from database import User, get_engine
+from src.database import User, get_engine
 from sqlalchemy.orm import Session
 
 auth = Blueprint('auth',__name__)
@@ -43,8 +43,8 @@ def login():
     if not user or not bcrypt.checkpw(password, user.password):
         return jsonify({"msg": "Bad username or password"}), 401
     
-    access_token = create_access_token(identity=username, expires_delta=datetime.timedelta(minutes=15))
-    refresh_token = create_refresh_token(identity=username)
+    access_token = create_access_token(identity=user.id, expires_delta=datetime.timedelta(minutes=60))
+    refresh_token = create_refresh_token(identity=user.id)
     
     return jsonify(access_token=access_token, refresh_token=refresh_token), 200
 

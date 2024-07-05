@@ -3,7 +3,7 @@ from flask import Blueprint,Response,request,json
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 import traceback
-from database import Game, get_engine
+from src.database import Game, get_engine
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 game = Blueprint('games',__name__)

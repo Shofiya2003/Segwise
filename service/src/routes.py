@@ -1,5 +1,5 @@
 from flask import Blueprint, Request, Response, json
-from  src.controllers.csv_upload_controllers import upload_csv
+from src.controllers.csv_upload_controllers import upload_csv
 from src.controllers.game_controllers import game
 from src.controllers.auth_controllers import auth
 api = Blueprint('api',__name__)
