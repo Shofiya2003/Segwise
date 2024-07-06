@@ -17,11 +17,13 @@ def handle_upload():
     current_user = get_jwt_identity()
     data = request.get_json()
     if not data or not 'csv_url' in data:
-        return json.jsonify({"error": "Invalid input"}), 400
+        return json.jsonify({"msg": "Invalid input"}), 400
+    if "https://docs.google.com/spreadsheets" not in data["csv_url"]:
+        return json.jsonify({"msg": "Only google sheets are supported"}), 400
     try:
         prev_upload_log = session.query(UploadLogs).filter(UploadLogs.csv_url == data['csv_url'], UploadLogs.success == True).all()
         if prev_upload_log:
-            return json.jsonify({"message":"CSV file already uploaded","log":prev_upload_log}), 200
+            return json.jsonify({"message":"CSV file already uploaded"}), 200
         uploaded_at = datetime.now()
         new_upload_log = UploadLogs(user_id=current_user, csv_url=data['csv_url'], uploaded_at=uploaded_at)
         session.add(new_upload_log)
@@ -30,5 +32,4 @@ def handle_upload():
         return json.jsonify({"message": "Uploading Task Queued"}), 200
     except Exception as e:
         traceback.print_exc(e)
-        print(e)
-        return json.jsonify({"error": f"Internal server error: {str(e)}"}), 500
+        return json.jsonify({"msg": f"Internal server error: {str(e)}"}), 500
