@@ -5,6 +5,7 @@ import os
 from .config.config import Config
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager
+from waitress import serve
 
 load_dotenv()
 app = Flask(__name__)
@@ -22,6 +23,5 @@ if __name__ == "__main__":
     @app.route('/',methods=['GET'])
     def pingServer():
         return json.jsonify({"msg":"we are logically blessed"})
-    app.run(host= config.HOST,
-            port= config.PORT,
-            debug= config.DEBUG)
+    print("Starting the app at 5000")
+    serve(app, host='0.0.0.0', port=5000)
