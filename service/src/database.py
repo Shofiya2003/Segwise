@@ -1,7 +1,7 @@
 import inspect
 from dotenv import load_dotenv
 import os
-from sqlalchemy import create_engine, Column, Integer, String, Date, CheckConstraint,PickleType,DateTime,func,Boolean
+from sqlalchemy import create_engine, Column, Integer, String, Date, func, Boolean, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import as_declarative
 
@@ -9,6 +9,15 @@ load_dotenv()
 DB_URL = os.getenv("DB_HOST")
 print(DB_URL)
 engine = create_engine(DB_URL)
+
+with engine.connect() as connection:
+    # set to improve sql performance
+    connection.execute(text("PRAGMA journal_mode = WAL;"))
+    connection.execute(text("PRAGMA synchronous = normal;"))
+    connection.execute(text("PRAGMA journal_size_limit = 6144000;"))
+    connection.commit()
+    print("PRAGMA settings updated successfully.")
+
 Base = declarative_base()
 
 @as_declarative()

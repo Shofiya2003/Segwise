@@ -1,18 +1,17 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import event
+from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from src.database import Game, Base, engine
+from src.database import Game, engine
 from datetime import datetime
 import ast
+import time
 
+session = Session(bind=engine)
 def insert_game(data, upload_log_id):
     # Parse data and insert into database
-    session = sessionmaker(bind=engine)()
-
     releaseDate = parse_date(data.get('Release date', None))
     supported_languges = data.get('Supported languages', '')
     data_list = ast.literal_eval(supported_languges)
-    print(data_list)
     if isinstance(data_list, list):
         supported_languges = ','.join(data_list)
     
@@ -40,27 +39,23 @@ def insert_game(data, upload_log_id):
             upload_log_id=upload_log_id
         )
         
-        session.add(game)
-        session.commit()
-        session.close()
-        
-        return True, "Game successfully inserted."
+        return game, "Game successfully inserted."
     
     except IntegrityError as e:
         session.rollback()
         session.close()
-        return False, f"IntegrityError: {str(e)}"
+        return None, f"IntegrityError: {str(e)}"
     
     except Exception as e:
         session.rollback()
         session.close()
-        return False, f"Error: {str(e)}"
+        return None, f"Error: {str(e)}"
     
 
 def parse_date(date_str):
     formats_to_try = [
-        '%b %Y',            # Format like "May 2020"
-        '%b %d, %Y'         # Format like "Oct 21, 2008"
+        '%b %Y',            
+        '%b %d, %Y'
     ]
 
     for date_format in formats_to_try:
