@@ -1,7 +1,7 @@
 import inspect
 from dotenv import load_dotenv
 import os
-from sqlalchemy import create_engine, Column, Integer, String, Date, func, Boolean, text
+from sqlalchemy import create_engine, Column, Integer, String, Date, func, Boolean, text, Index
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import as_declarative
 
@@ -44,6 +44,8 @@ class UploadLogs(Base):
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
     
+Index('ix_uploadLogs_csv_success', UploadLogs.csv_url, UploadLogs.success)
+
 class Game(Base):
     __tablename__ = "games"
     id = Column(Integer, primary_key=True,autoincrement=True)
