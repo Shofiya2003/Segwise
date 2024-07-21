@@ -16,28 +16,28 @@ def insert_game(data, upload_log_id):
         supported_languges = ','.join(data_list)
     
     try:
-        game = Game(
-            appId=int(data.get('AppID', 0)),
-            name=data.get('Name', ''),
-            releaseDate=releaseDate,
-            requiredAge=int(data.get('Required age', 0)),
-            price=float(data.get('Price', 0.0)),
-            dlcCount=int(data.get('DLC count', 0)),
-            aboutTheGame=data.get('About the game', ''),
-            supportedLanguages=supported_languges,
-            windows=bool(data.get('Windows', 'FALSE').upper() == 'TRUE'),
-            linux=bool(data.get('Linux', 'FALSE').upper() == 'TRUE'),
-            mac=bool(data.get('Mac', 'FALSE').upper() == 'TRUE'),
-            positive=int(data.get('Positive', 0)),
-            negative=int(data.get('Negative', 0)),
-            scoreRank=int(data.get('Score rank', 0)) if data.get('Score rank') else None,
-            developers=data.get('Developers', ''),
-            publishers=data.get('Publishers', ''),
-            categories=data.get('Categories', ''),
-            genres=data.get('Genres', ''),
-            tags=data.get('Tags', ''),
-            upload_log_id=upload_log_id
-        )
+        game = {
+            "appId":int(data.get('AppID', 0)),
+            "name":data.get('Name', ''),
+            "releaseDate":releaseDate,
+            "requiredAge":int(data.get('Required age', 0)),
+            "price":float(data.get('Price', 0.0)),
+            "dlcCount":int(data.get('DLC count', 0)),
+            "aboutTheGame":data.get('About the game', ''),
+            "supportedLanguages":supported_languges,
+            "windows":bool(data.get('Windows', 'FALSE').upper() == 'TRUE'),
+            "linux":bool(data.get('Linux', 'FALSE').upper() == 'TRUE'),
+            "mac":bool(data.get('Mac', 'FALSE').upper() == 'TRUE'),
+            "positive":int(data.get('Positive', 0)),
+            "negative":int(data.get('Negative', 0)),
+            "scoreRank":int(data.get('Score rank', 0)) if data.get('Score rank') else None,
+            "developers":data.get('Developers', ''),
+            "publishers":data.get('Publishers', ''),
+            "categories":data.get('Categories', ''),
+            "genres":data.get('Genres', ''),
+            "tags":data.get('Tags', ''),
+            "upload_log_id":upload_log_id
+        }
         
         return game, "Game successfully inserted."
     
@@ -49,6 +49,7 @@ def insert_game(data, upload_log_id):
     except Exception as e:
         session.rollback()
         session.close()
+        print(str(e))
         return None, f"Error: {str(e)}"
     
 
